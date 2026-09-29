@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Data Customer Promotor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --yellow:#FFC915; --yellow-soft:#FFF3C4; --ink:#0D0D0D; --paper:#FFFFFF;
+  --mist:#F4F4F0; --line:#E2E2DA; --muted:#6A6A62; --ok:#1C8C4E; --err:#C8321F;
+  --r-lg:28px; --r-md:14px; --r-sm:10px;
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-padding-top:70px}
+body{font-family:'Sora',system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--mist);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+
+/* top bar */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--ink);color:#fff}
+.bar-in{max-width:1080px;margin:auto;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{font-weight:800;font-size:18px;letter-spacing:-.02em;display:flex;align-items:center;gap:10px}
+.brand i{width:22px;height:22px;border-radius:7px;background:var(--yellow);display:inline-block}
+.tabs{display:flex;gap:4px;background:#232323;border-radius:999px;padding:4px}
+.tabs button{border:0;background:transparent;color:#cfcfc6;padding:8px 16px;border-radius:999px;cursor:pointer;font-weight:600;font-size:14px}
+.tabs button[aria-selected="true"]{background:var(--yellow);color:var(--ink)}
+
+/* hero */
+.hero{background:var(--yellow);border-radius:0 0 var(--r-lg) var(--r-lg)}
+.hero-in{max-width:1080px;margin:auto;padding:44px 20px 88px}
+.hero h1{font-size:clamp(38px,9vw,84px);line-height:.98;font-weight:800;letter-spacing:-.045em;max-width:12ch}
+.hero p{margin-top:16px;max-width:44ch;font-weight:500;font-size:16px}
+.hero .mine{display:inline-flex;align-items:baseline;gap:10px;margin-top:24px;background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-size:14px}
+.hero .mine b{font-size:22px;color:var(--yellow);font-weight:800}
+
+main{max-width:1080px;margin:auto;padding:0 20px 80px}
+.view[hidden]{display:none}
+
+/* form */
+.card{background:var(--paper);border-radius:var(--r-lg);padding:28px;box-shadow:0 1px 0 var(--line)}
+.form-card{margin-top:-56px;position:relative}
+fieldset{border:0;padding:0;margin:0 0 28px}
+legend{font-weight:700;font-size:18px;margin-bottom:4px;letter-spacing:-.01em}
+.hint{color:var(--muted);font-size:13px;margin-bottom:16px}
+.grid{display:grid;gap:16px;grid-template-columns:1fr}
+@media(min-width:720px){.grid{grid-template-columns:1fr 1fr}.span2{grid-column:span 2}}
+label.f{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600}
+input[type=text],input[type=tel],input[type=date],input[type=password],input[type=search],select{
+  width:100%;background:var(--mist);border:2px solid transparent;border-radius:var(--r-md);padding:13px 14px;font-size:16px;font-weight:500;transition:border-color .15s,background .15s}
+input:focus,select:focus{outline:none;border-color:var(--ink);background:#fff}
+input.bad{border-color:var(--err);background:#FFF1EE}
+.err{color:var(--err);font-size:12px;font-weight:600;min-height:0}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:6px;background:var(--mist);border-radius:var(--r-md);padding:5px}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg label{text-align:center;padding:10px 8px;border-radius:10px;cursor:pointer;font-weight:600;font-size:15px}
+.seg input:checked+label{background:var(--ink);color:var(--yellow)}
+.seg input:focus-visible+label{outline:3px solid var(--ink);outline-offset:2px}
+.seg small{display:block;font-weight:500;font-size:11px;opacity:.7}
+.remember{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.link{background:none;border:0;text-decoration:underline;cursor:pointer;font-size:13px;font-weight:600;color:var(--muted)}
+.btn{border:0;cursor:pointer;background:var(--ink);color:var(--yellow);font-weight:700;font-size:17px;padding:16px 28px;border-radius:999px;width:100%;transition:transform .12s}
+.btn:active{transform:scale(.98)}
+.btn[disabled]{opacity:.55;cursor:wait}
+.btn.alt{background:var(--yellow);color:var(--ink)}
+.btn.small{width:auto;font-size:14px;padding:11px 20px}
+.notice{margin-top:16px;padding:14px 16px;border-radius:var(--r-md);font-size:14px;font-weight:600}
+.notice.ok{background:#E3F5EA;color:#0F5F32}
+.notice.bad{background:#FDE9E5;color:#8E2113}
+.setup{background:var(--yellow-soft);border-radius:var(--r-md);padding:14px 16px;font-size:14px;margin-bottom:20px}
+
+/* dashboard */
+.gate{max-width:420px;margin:48px auto;text-align:center}
+.gate h2{font-size:26px;letter-spacing:-.03em;margin-bottom:6px}
+.gate p{color:var(--muted);font-size:14px;margin-bottom:18px}
+.gate .row{display:flex;gap:10px}
+.dash-head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;padding:32px 0 20px}
+.dash-head h2{font-size:clamp(28px,5vw,44px);letter-spacing:-.04em;line-height:1}
+.filters{display:flex;gap:10px;flex-wrap:wrap}
+.filters input,.filters select{width:auto;background:#fff;padding:10px 12px;font-size:14px}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(min-width:720px){.kpis{grid-template-columns:repeat(4,1fr)}}
+.kpi{background:var(--paper);border-radius:var(--r-md);padding:18px}
+.kpi.hot{background:var(--yellow)}
+.kpi b{display:block;font-size:34px;font-weight:800;letter-spacing:-.04em;line-height:1.1}
+.kpi span{font-size:13px;font-weight:600;color:var(--muted)}
+.kpi.hot span{color:var(--ink)}
+.sec-title{display:flex;justify-content:space-between;align-items:center;margin:32px 0 12px;gap:12px}
+.sec-title h3{font-size:20px;letter-spacing:-.02em}
+.tw{background:var(--paper);border-radius:var(--r-lg);overflow-x:auto;padding:8px 8px 12px}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:14px}
+th{text-align:left;font-size:12px;color:var(--muted);font-weight:600;padding:12px 14px;border-bottom:2px solid var(--line);white-space:nowrap}
+td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.who b{display:block}
+.who small{color:var(--muted)}
+.prog{min-width:150px}
+.prog .track{height:10px;background:var(--mist);border-radius:99px;overflow:hidden}
+.prog .fill{height:100%;background:var(--ink);border-radius:99px}
+.prog .fill.done{background:var(--ok)}
+.prog small{font-size:12px;color:var(--muted);font-weight:600}
+.pill{display:inline-block;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:700;background:var(--yellow-soft)}
+.pill.cb{background:var(--ink);color:var(--yellow)}
+.empty{padding:40px 16px;text-align:center;color:var(--muted);font-size:14px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:14px 22px;border-radius:999px;font-weight:600;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:20;max-width:90vw}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="bar-in">
+    <div class="brand"><i></i>Data Customer</div>
+    <nav class="tabs" role="tablist" aria-label="Menu">
+      <button role="tab" id="tab-input" aria-selected="true" aria-controls="view-input">Input data</button>
+      <button role="tab" id="tab-pantau" aria-selected="false" aria-controls="view-pantau">Pantau</button>
+    </nav>
+  </div>
+</header>
+
+<!-- ============ VIEW: INPUT ============ -->
+<section id="view-input" class="view" role="tabpanel" aria-labelledby="tab-input">
+  <div class="hero">
+    <div class="hero-in">
+      <h1>Input data customer</h1>
+      <p>Isi setiap kali ada customer baru. Data langsung masuk ke tim dan tercatat di progres kamu.</p>
+      <div class="mine" id="mine" hidden>Hari ini di perangkat ini <b id="mineN">0</b> data</div>
+    </div>
+  </div>
+
+  <main>
+    <form class="card form-card" id="form" novalidate>
+      <div class="setup" id="setupWarn" hidden>Alamat Google Apps Script belum diisi. Buka <b>index.html</b>, isi <b>SCRIPT_URL</b> di bagian CONFIG.</div>
+
+      <fieldset>
+        <legend>Data promotor</legend>
+        <div class="remember">
+          <p class="hint" style="margin:0">Cukup diisi sekali, tersimpan di HP ini.</p>
+          <button type="button" class="link" id="clearMe">Ganti promotor</button>
+        </div>
+        <div class="grid">
+          <label class="f span2">ARM / FT name
+            <input type="text" name="arm" autocomplete="off" required>
+            <span class="err"></span></label>
+          <label class="f">SA name
+            <input type="text" name="sa" autocomplete="name" required>
+            <span class="err"></span></label>
+          <label class="f">SA personal code
+            <input type="text" name="saCode" autocomplete="off" required>
+            <span class="err"></span></label>
+          <label class="f">Store code
+            <input type="text" name="storeCode" autocomplete="off" required>
+            <span class="err"></span></label>
+          <label class="f">Store name
+            <input type="text" name="storeName" autocomplete="off" required>
+            <span class="err"></span></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Data customer</legend>
+        <p class="hint">Diisi baru untuk setiap customer.</p>
+        <div class="grid">
+          <label class="f">Date
+            <input type="date" name="date" required>
+            <span class="err"></span></label>
+          <div class="f">Status
+            <div class="seg" role="radiogroup" aria-label="Status">
+              <input type="radio" name="status" id="st-cl" value="CL" required><label for="st-cl">CL</label>
+              <input type="radio" name="status" id="st-cb" value="CB"><label for="st-cb">CB</label>
+            </div>
+            <span class="err" data-for="status"></span></div>
+          <label class="f">Customer name
+            <input type="text" name="customer" autocomplete="off" required>
+            <span class="err"></span></label>
+          <label class="f">No. WhatsApp
+            <input type="tel" name="wa" inputmode="numeric" placeholder="08xxxxxxxxxx" autocomplete="off" required>
+            <span class="err"></span></label>
+          <label class="f">Realme product
+            <input type="text" name="product" autocomplete="off" placeholder="Tipe HP yang dibeli / ditawarkan" required>
+            <span class="err"></span></label>
+          <div class="f">Gender
+            <div class="seg" role="radiogroup" aria-label="Gender">
+              <input type="radio" name="gender" id="g-l" value="Laki-laki" required><label for="g-l">Laki-laki</label>
+              <input type="radio" name="gender" id="g-p" value="Perempuan"><label for="g-p">Perempuan</label>
+            </div>
+            <span class="err" data-for="gender"></span></div>
+        </div>
+      </fieldset>
+
+      <button class="btn" id="submitBtn" type="submit">Kirim data</button>
+      <div id="formMsg" role="status" aria-live="polite"></div>
+    </form>
+  </main>
+</section>
+
+<!-- ============ VIEW: PANTAU ============ -->
+<section id="view-pantau" class="view" role="tabpanel" aria-labelledby="tab-pantau" hidden>
+  <main>
+    <div class="gate card" id="gate">
+      <h2>Halaman pantau</h2>
+      <p>Masukkan PIN admin untuk melihat progres promotor.</p>
+      <div class="row">
+        <input type="password" id="pin" placeholder="PIN" autocomplete="current-password" aria-label="PIN admin">
+        <button class="btn small alt" id="pinBtn" type="button">Buka</button>
+      </div>
+      <div id="gateMsg" class="notice bad" hidden style="margin-top:14px"></div>
+    </div>
+
+    <div id="dash" hidden>
+      <div class="dash-head">
+        <h2>Progres promotor</h2>
+        <div class="filters">
+          <select id="fArm" aria-label="Filter ARM / FT"><option value="">Semua ARM / FT</option></select>
+          <input type="date" id="fFrom" aria-label="Dari tanggal">
+          <input type="date" id="fTo" aria-label="Sampai tanggal">
+          <button class="btn small" id="refresh" type="button">Muat ulang</button>
+        </div>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi hot"><b id="kTotal">0</b><span>Total data masuk</span></div>
+        <div class="kpi"><b id="kToday">0</b><span>Masuk hari ini</span></div>
+        <div class="kpi"><b id="kPromo">0</b><span>Promotor aktif</span></div>
+        <div class="kpi"><b id="kSplit">0 / 0</b><span>CL / CB</span></div>
+      </div>
+
+      <div class="sec-title"><h3>Per promotor</h3><input type="search" id="fSearch" placeholder="Cari nama / kode / toko" aria-label="Cari" style="width:240px;padding:10px 12px;font-size:14px;background:#fff"></div>
+      <div class="tw"><table id="tPromo">
+        <thead><tr><th>Promotor</th><th>Toko</th><th class="num">Hari ini</th><th class="num">CL</th><th class="num">CB</th><th class="num">Total</th><th>Progres target</th></tr></thead>
+        <tbody></tbody></table></div>
+
+      <div class="sec-title"><h3>Data terbaru</h3><button class="btn small alt" id="csv" type="button">Unduh CSV</button></div>
+      <div class="tw"><table id="tRecent">
+        <thead><tr><th>Tanggal</th><th>Customer</th><th>WhatsApp</th><th>Produk</th><th>Status</th><th>Promotor</th></tr></thead>
+        <tbody></tbody></table></div>
+    </div>
+  </main>
+</section>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* ================= CONFIG ================= */
+const CONFIG = {
+  SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbxFttCyJiyJxlTWVgRCj6rPGuEWwCtf4A7qTk6mdzCd02Rs4BMxrmCHfUIe5QRUT_U/exec',  // URL Web App dari Google Apps Script (berakhiran /exec)
+  TARGET: 30                                 // target jumlah data per promotor (ubah sesuai kebutuhan)
+};
+/* ========================================== */
+
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const todayStr = () => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0,10); };
+const store = {
+  get(k){ try{ return localStorage.getItem(k) }catch(e){ return null } },
+  set(k,v){ try{ localStorage.setItem(k,v) }catch(e){} },
+  del(k){ try{ localStorage.removeItem(k) }catch(e){} }
+};
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toast.t); toast.t=setTimeout(()=>t.classList.remove('show'),2600); }
+const configured = () => CONFIG.SCRIPT_URL && !CONFIG.SCRIPT_URL.startsWith('PASTE_');
+
+/* ---------- tabs ---------- */
+function showTab(name){
+  ['input','pantau'].forEach(n=>{
+    $('#view-'+n).hidden = n!==name;
+    $('#tab-'+n).setAttribute('aria-selected', n===name);
+  });
+  history.replaceState(null,'','#'+name);
+  window.scrollTo(0,0);
+}
+$('#tab-input').onclick = () => showTab('input');
+$('#tab-pantau').onclick = () => showTab('pantau');
+showTab(location.hash === '#pantau' ? 'pantau' : 'input');
+
+/* ---------- form ---------- */
+const form = $('#form');
+const PROMO_FIELDS = ['arm','sa','saCode','storeCode','storeName'];
+form.date.value = todayStr();
+if(!configured()) $('#setupWarn').hidden = false;
+
+function loadPromo(){
+  try{ const p = JSON.parse(store.get('promo')||'{}'); PROMO_FIELDS.forEach(k=>{ if(p[k]) form[k].value = p[k]; }); }catch(e){}
+}
+function savePromo(){ const p={}; PROMO_FIELDS.forEach(k=>p[k]=form[k].value.trim()); store.set('promo', JSON.stringify(p)); }
+loadPromo();
+$('#clearMe').onclick = () => { store.del('promo'); PROMO_FIELDS.forEach(k=>form[k].value=''); form.arm.focus(); };
+
+function myCount(){
+  let log = []; try{ log = JSON.parse(store.get('log')||'[]'); }catch(e){}
+  const n = log.filter(d=>d===todayStr()).length;
+  $('#mine').hidden = false; $('#mineN').textContent = n;
+}
+function bumpCount(){
+  let log = []; try{ log = JSON.parse(store.get('log')||'[]'); }catch(e){}
+  log.push(todayStr()); store.set('log', JSON.stringify(log.slice(-500))); myCount();
+}
+myCount();
+
+function normWA(v){
+  let d = String(v).replace(/\D/g,'');
+  if(d.startsWith('0')) d = '62' + d.slice(1);
+  else if(d.startsWith('8')) d = '62' + d;
+  return d;
+}
+function setErr(el, msg){
+  const box = el.closest('label,div.f')?.querySelector('.err');
+  if(el.classList) el.classList.toggle('bad', !!msg);
+  if(box) box.textContent = msg || '';
+}
+function validate(){
+  let ok = true, first = null;
+  const mark = (el,msg)=>{ setErr(el,msg); if(msg){ ok=false; first = first || el; } };
+  ['arm','sa','saCode','storeCode','storeName','customer','product','date'].forEach(k=>{
+    mark(form[k], form[k].value.trim() ? '' : 'Wajib diisi');
+  });
+  const wa = normWA(form.wa.value);
+  mark(form.wa, /^62\d{8,13}$/.test(wa) ? '' : 'Nomor tidak valid. Contoh: 081234567890');
+  ['status','gender'].forEach(k=>{
+    const box = $(`.err[data-for="${k}"]`); const has = !!form[k].value;
+    box.textContent = has ? '' : 'Pilih salah satu';
+    if(!has){ ok=false; first = first || form[k][0]; }
+  });
+  if(first) first.focus();
+  return ok;
+}
+$$('input', form).forEach(i => i.addEventListener('input', ()=> i.classList.contains('bad') && setErr(i,'')));
+
+let sending = false;
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  if(sending) return;
+  const msg = $('#formMsg'); msg.innerHTML = '';
+  if(!configured()){ msg.innerHTML = '<div class="notice bad">Alamat Google Apps Script belum diisi di index.html.</div>'; return; }
+  if(!validate()) return;
+
+  const data = {
+    date: form.date.value, arm: form.arm.value.trim(), sa: form.sa.value.trim(), saCode: form.saCode.value.trim(),
+    storeCode: form.storeCode.value.trim(), storeName: form.storeName.value.trim(), status: form.status.value,
+    wa: normWA(form.wa.value), product: form.product.value.trim(), gender: form.gender.value, customer: form.customer.value.trim()
+  };
+  sending = true; const btn = $('#submitBtn'); btn.disabled = true; btn.textContent = 'Mengirim...';
+  try{
+    await fetch(CONFIG.SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(data) });
+    savePromo(); bumpCount();
+    ['customer','wa','product'].forEach(k=>form[k].value='');
+    form.status.forEach(r=>r.checked=false); form.gender.forEach(r=>r.checked=false);
+    msg.innerHTML = '<div class="notice ok">Data terkirim. Lanjut isi customer berikutnya.</div>';
+    toast('Data terkirim'); form.customer.focus();
+  }catch(err){
+    msg.innerHTML = '<div class="notice bad">Data belum terkirim. Cek sinyal internet lalu tekan Kirim data lagi.</div>';
+  }finally{
+    sending = false; btn.disabled = false; btn.textContent = 'Kirim data';
+  }
+});
+
+/* ---------- dashboard ---------- */
+let ALL = [];
+function pinValue(){ try{ return sessionStorage.getItem('pin')||''; }catch(e){ return ''; } }
+
+async function loadData(pin){
+  if(!configured()){ throw new Error('Alamat Google Apps Script belum diisi di index.html.'); }
+  const res = await fetch(CONFIG.SCRIPT_URL + '?action=list&pin=' + encodeURIComponent(pin));
+  const json = await res.json();
+  if(!json.ok) throw new Error(json.error || 'Gagal memuat data');
+  ALL = json.rows || [];
+  const arms = [...new Set(ALL.map(r=>r.arm).filter(Boolean))].sort();
+  const cur = $('#fArm').value;
+  $('#fArm').innerHTML = '<option value="">Semua ARM / FT</option>' + arms.map(a=>`<option ${a===cur?'selected':''}>${esc(a)}</option>`).join('');
+  render();
+}
+async function openDash(pin){
+  const btn = $('#pinBtn'); btn.disabled = true; btn.textContent = 'Memuat...';
+  const gm = $('#gateMsg'); gm.hidden = true;
+  try{
+    await loadData(pin);
+    try{ sessionStorage.setItem('pin', pin); }catch(e){}
+    $('#gate').hidden = true; $('#dash').hidden = false;
+  }catch(err){
+    gm.textContent = err.message === 'Failed to fetch' ? 'Tidak bisa terhubung. Cek URL Apps Script dan koneksi internet.' : err.message;
+    gm.hidden = false;
+  }finally{ btn.disabled = false; btn.textContent = 'Buka'; }
+}
+$('#pinBtn').onclick = () => openDash($('#pin').value.trim());
+$('#pin').addEventListener('keydown', e => e.key==='Enter' && openDash($('#pin').value.trim()));
+$('#refresh').onclick = async () => { try{ await loadData(pinValue()); toast('Data diperbarui'); }catch(e){ toast(e.message); } };
+['fArm','fFrom','fTo'].forEach(id => $('#'+id).addEventListener('change', render));
+$('#fSearch').addEventListener('input', render);
+if(pinValue()) openDash(pinValue());
+
+function filtered(){
+  const arm=$('#fArm').value, from=$('#fFrom').value, to=$('#fTo').value;
+  return ALL.filter(r => (!arm || r.arm===arm) && (!from || r.date>=from) && (!to || r.date<=to));
+}
+function render(){
+  const rows = filtered(), t = todayStr();
+  const map = new Map();
+  rows.forEach(r=>{
+    const key = (r.saCode||r.sa||'').toLowerCase();
+    if(!map.has(key)) map.set(key,{sa:r.sa,saCode:r.saCode,arm:r.arm,store:r.storeName,storeCode:r.storeCode,total:0,today:0,cl:0,cb:0});
+    const m = map.get(key); m.total++; if(r.date===t) m.today++; r.status==='CB' ? m.cb++ : m.cl++;
+  });
+  let list = [...map.values()].sort((a,b)=>b.total-a.total);
+  const q = $('#fSearch').value.trim().toLowerCase();
+  if(q) list = list.filter(m => [m.sa,m.saCode,m.store,m.storeCode,m.arm].join(' ').toLowerCase().includes(q));
+
+  $('#kTotal').textContent = rows.length;
+  $('#kToday').textContent = rows.filter(r=>r.date===t).length;
+  $('#kPromo').textContent = map.size;
+  $('#kSplit').textContent = rows.filter(r=>r.status==='CL').length + ' / ' + rows.filter(r=>r.status==='CB').length;
+
+  $('#tPromo tbody').innerHTML = list.length ? list.map(m=>{
+    const pct = Math.min(100, Math.round(m.total / CONFIG.TARGET * 100));
+    return `<tr>
+      <td class="who"><b>${esc(m.sa)}</b><small>${esc(m.saCode)} &middot; ${esc(m.arm)}</small></td>
+      <td class="who"><b>${esc(m.store)}</b><small>${esc(m.storeCode)}</small></td>
+      <td class="num">${m.today}</td><td class="num">${m.cl}</td><td class="num">${m.cb}</td>
+      <td class="num"><b>${m.total}</b></td>
+      <td class="prog"><div class="track"><div class="fill ${pct>=100?'done':''}" style="width:${pct}%"></div></div><small>${m.total} dari ${CONFIG.TARGET} (${pct}%)</small></td>
+    </tr>`;
+  }).join('') : '<tr><td colspan="7" class="empty">Belum ada data untuk filter ini.</td></tr>';
+
+  const recent = [...rows].sort((a,b)=> (b.date+String(b.no).padStart(8,'0')).localeCompare(a.date+String(a.no).padStart(8,'0'))).slice(0,50);
+  $('#tRecent tbody').innerHTML = recent.length ? recent.map(r=>`<tr>
+    <td>${esc(r.date)}</td><td>${esc(r.customer)}</td><td>${esc(r.wa)}</td><td>${esc(r.product)}</td>
+    <td><span class="pill ${r.status==='CB'?'cb':''}">${esc(r.status)}</span></td><td>${esc(r.sa)}</td></tr>`).join('')
+    : '<tr><td colspan="6" class="empty">Belum ada data masuk.</td></tr>';
+}
+
+$('#csv').onclick = () => {
+  const rows = filtered();
+  if(!rows.length){ toast('Tidak ada data untuk diunduh'); return; }
+  const head = ['NO','DATE','ARM / FT NAME','SA NAME','SA PERSONAL CODE','STORE CODE','STORE NAME','STATUS (CL/CB)','NO. WHATSAPP','REALME PRODUCT','GENDER','CUSTOMER NAME'];
+  const keys = ['no','date','arm','sa','saCode','storeCode','storeName','status','wa','product','gender','customer'];
+  const cell = v => '"' + String(v ?? '').replace(/"/g,'""') + '"';
+  const csv = [head.map(cell).join(','), ...rows.map(r=>keys.map(k=>cell(k==='wa' ? '\t'+r[k] : r[k])).join(','))].join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['\ufeff'+csv], {type:'text/csv;charset=utf-8'}));
+  a.download = 'data-customer-' + todayStr() + '.csv'; a.click(); URL.revokeObjectURL(a.href);
+};
+</script>
+</body>
+</html>
